@@ -13,6 +13,7 @@ public class NotaFiscalBuilder {
 	private Calendar dataEmissao = Calendar.getInstance();
 	private String observacoes;
 	private List<ItemDaNota> todosItens = new ArrayList<ItemDaNota>();
+	private List<AcaoAposGerarNota> listaAcoes = new ArrayList<AcaoAposGerarNota>();
 	
 	public NotaFiscalBuilder paraRazaoSocial(String razaoSocial) {
 		this.razaoSocial = razaoSocial;
@@ -24,6 +25,13 @@ public class NotaFiscalBuilder {
 		return this;
 	}
 
+	
+	public NotaFiscalBuilder(){}
+	
+	public NotaFiscalBuilder(List<AcaoAposGerarNota> listaAcoes) {
+		this.listaAcoes = listaAcoes;
+	}
+	
 	
 	public NotaFiscalBuilder comItem(ItemDaNota item) {
 		todosItens.add(item);
@@ -45,8 +53,18 @@ public class NotaFiscalBuilder {
 	}
 	
 	public NotaFiscal construir() {
-		return new NotaFiscal(razaoSocial, cnpj, valorBruto, impostos, dataEmissao, observacoes, todosItens);
+		NotaFiscal nf = new NotaFiscal(razaoSocial, cnpj, valorBruto, impostos, dataEmissao, observacoes, todosItens);
+		
+		executarAcoesAposConstrucao(nf);
+		
+		return nf;
 	}
 	
-
+	private void executarAcoesAposConstrucao(NotaFiscal nf) {
+		for (AcaoAposGerarNota acao : listaAcoes) {
+			acao.executar(nf);
+		}
+	}
+	
+	
 }
